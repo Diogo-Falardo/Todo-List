@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Environments
+env/
+venv/
+.venv/
+
+# IDE / tooling
+.vscode/
+.idea/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Git
+.git
+.gitignore
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local config/secrets
+.env

@@ -86,6 +86,29 @@ def vUsername(value: Optional[str]) -> str:
         THROW_ERROR("Username must contain only letters, numbers, underscores and spaces!", 400)
 
     return username
+# special string
+def vSString(value: Optional[str], title: Optional[str] = "text",
+   minlen: Optional[int] = 1,         
+   maxlen: Optional[int] = 20,
+   allow_none: bool = False,       
+) -> str:
+    if value is None:
+        if allow_none:
+            return None
+        THROW_ERROR(f"{title} cannot be blank!", 400)
+    if not isinstance(value, str):
+        THROW_ERROR(f"{title} is not in correct format!", 400)
+
+    string = value.strip()
+    if not string:
+        THROW_ERROR(f"{title} cannot be blank!", 400)
+
+    if len(string) < minlen:
+        THROW_ERROR(f"Minimum characters {minlen}!", 400)
+    if len(string) > maxlen:
+        THROW_ERROR(f"Too many characters {maxlen}", 400)
+
+    return string
 
 "generals"
 
@@ -94,9 +117,12 @@ normal_text = re.compile(r"^[0-9A-Za-zÀ-ÖØ-öø-ÿ\s.,!?@#%&()\-_/]*$")
 # string
 def vString(value: Optional[str], title: Optional[str] = "text",
    minlen: Optional[int] = 1,         
-   maxlen: Optional[int] = 20         
+   maxlen: Optional[int] = 20,
+   allow_none: bool = False,        
 ) -> str:
     if value is None:
+        if allow_none:
+            return None
         THROW_ERROR(f"{title} cannot be blank!", 400)
     if not isinstance(value, str):
         THROW_ERROR(f"{title} is not in correct format!", 400)
@@ -119,8 +145,11 @@ def vString(value: Optional[str], title: Optional[str] = "text",
 def vInt(integer: Optional[int], title: Optional[str] = "number",
     minNumber: Optional[int] = 0,
     maxNumber: Optional[int] = 1000000,     
+    allow_none: bool = False,    
 ) -> int:
     if integer is None:
+        if allow_none:
+            return None
         THROW_ERROR(f"{title} cannot be blank!", 400)
     if not isinstance(integer, int):
         THROW_ERROR(f"{title} is not in correct format!", 400)
@@ -133,9 +162,12 @@ def vInt(integer: Optional[int], title: Optional[str] = "number",
 def vDecimal(decimal = Optional[Decimal], title: Optional[str] = "number",
     minNumber: Decimal = Decimal("0"),
     maxNumber: Decimal = Decimal("1000000"),  
+    allow_none: bool = False,
 ) -> Decimal:
     
     if decimal is None:
+        if allow_none:
+            return None
         THROW_ERROR(f"{title} cannot be blank!", 400)
     try:
         decimal = Decimal(str(decimal))
