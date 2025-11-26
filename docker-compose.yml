@@ -1,7 +1,7 @@
-version: "3.9"
+# version: "3.9"
 
 services:
-  api:
+  backend:
     container_name: kirainva-backend
     build:
       context: ./backend
@@ -12,3 +12,21 @@ services:
       - ./backend/.env
     volumes:
       - ./backend:/app
+
+  # frontend:
+  #   container_name: kirainva-frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     NODE_ENV: development
+  #     NEXT_TELEMETRY_DISABLED: "1"
+  #     CHOKIDAR_USEPOLLING: "true"
+  #     WATCHPACK_POLLING: "true"
+  #     NEXT_WEBPACK_USEPOLLING: "true
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   command: npm run dev -- --hostname 0.0.0.0 --port 3000
