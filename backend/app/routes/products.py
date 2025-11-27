@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from enum import Enum
 from typing import Optional, Literal
 # db, security
 from app.application.security import validate_auth_token

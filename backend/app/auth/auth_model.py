@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Enum, DateTime
+from sqlalchemy.orm import relationship
 from app.models._base import Base
 
 class Auth(Base):
@@ -12,6 +13,8 @@ class Auth(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     last_login = Column(DateTime, nullable=True)
+
+    profile = relationship("Profile", uselist=False, back_populates="user")
 
     def __repr__(self):
         return (
