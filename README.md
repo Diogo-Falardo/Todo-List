@@ -1,2 +1,5 @@
-# KiraInv
-comming soon.....
+# Todo List
+
+## Stack
+
+        Tanstack
