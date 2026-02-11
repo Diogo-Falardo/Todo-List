@@ -1,5 +1,7 @@
+import { z } from 'zod'
 import { startTransition, useState } from 'react'
 import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
+import { eq } from 'drizzle-orm'
 import { createServerFn, useServerFn } from '@tanstack/react-start'
 import { EditIcon, ListTodoIcon, PlusIcon, Trash } from 'lucide-react'
 import { db } from '@/db'
@@ -23,9 +25,7 @@ import {
 } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
-import { z } from 'zod'
 import { todos } from '@/db/schema'
-import { eq } from 'drizzle-orm'
 
 const loader = createServerFn({
   method: 'GET',
@@ -72,6 +72,8 @@ function App() {
     </div>
   )
 }
+
+// table
 
 type Todo = {
   id: string

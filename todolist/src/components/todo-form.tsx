@@ -3,12 +3,12 @@ import { redirect } from '@tanstack/react-router'
 import { useState } from 'react'
 import { PlusIcon } from 'lucide-react'
 import { z } from 'zod'
+import { eq } from 'drizzle-orm'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { LoadingSwap } from './ui/loading-swap'
 import { db } from '@/db'
 import { todos } from '@/db/schema'
-import { eq } from 'drizzle-orm'
 
 const addTodo = createServerFn({ method: 'POST' })
   .inputValidator(
