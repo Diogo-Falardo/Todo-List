@@ -9,14 +9,14 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-5">
           <h1 className="text-primary text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black">
             Welcome to anky dashboard (builted on top of ptero API)
           </h1>
           <Button
-            className="text-secondary"
+            className="text-primary text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium underline-offset-2"
             variant={"link"}
             onClick={() => {
               window.open(

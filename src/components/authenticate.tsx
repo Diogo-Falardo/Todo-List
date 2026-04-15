@@ -1,15 +1,46 @@
 import { useForm } from "@tanstack/react-form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsContent } from "./ui/tabs";
 import { Input } from "./ui/input";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
+import { Field, FieldError, FieldGroup } from "./ui/field";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
+import { useState } from "react";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.email(),
+  password: z
+    .string()
+    .min(6)
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@!%*?&]).{6,}$/),
+});
+
+const registerSchema = loginSchema
+  .pick({
+    email: true,
+    password: true,
+  })
+  .extend({
+    passwordRepeat: z.string(),
+  })
+  .refine((data) => data.password === data.passwordRepeat, {
+    message: "Passwords do not match",
+    path: ["passwordRepeat"],
+  });
 
 export const Authenticate = () => {
+  const [tab, setTab] = useState("login");
+
   const loginForm = useForm({
     defaultValues: {
       email: "",
       password: "",
+    },
+    validators: {
+      onSubmit: loginSchema,
+    },
+    onSubmit: async ({ value }) => {
+      console.log(value);
     },
   });
 
@@ -19,10 +50,16 @@ export const Authenticate = () => {
       password: "",
       passwordRepeat: "",
     },
+    validators: {
+      onSubmit: registerSchema,
+    },
+    onSubmit: async ({ value }) => {
+      console.log(value);
+    },
   });
 
   return (
-    <Tabs defaultValue="login">
+    <Tabs value={tab} onValueChange={setTab}>
       <TabsContent value="login" className="flex flex-col gap-5">
         <div className="flex w-full items-center justify-center">
           <h1>Login</h1>
@@ -85,14 +122,20 @@ export const Authenticate = () => {
           </FieldGroup>
         </form>
         <div className="w-full flex justify-between items-center ">
-          <Checkbox /> <span className="ml-2">Remember me</span>
-          <TabsTrigger value="register">Create an account</TabsTrigger>
+          <div className="flex gap-2 items-center">
+            <Checkbox /> <span>Remember me</span>
+          </div>
+          <Button variant={"link"} onClick={() => setTab("register")}>
+            Create an account
+          </Button>
         </div>
         <div className="w-full flex justify-center items-center">
-          <Button>Login</Button>
+          <Button type="submit" form="login-form">
+            Login
+          </Button>
         </div>
       </TabsContent>
-      <TabsContent value="register">
+      <TabsContent value="register" className="flex flex-col gap-5">
         <div className="flex w-full items-center justify-center">
           <h1>Register</h1>
         </div>
@@ -151,13 +194,41 @@ export const Authenticate = () => {
                 );
               }}
             />
+            <registerForm.Field
+              name="passwordRepeat"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="password"
+                      autoComplete="off"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
           </FieldGroup>
         </form>
         <div className="w-full flex justify-start ">
-          <TabsTrigger value="login">already have an account?</TabsTrigger>
+          <Button variant={"link"} onClick={() => setTab("login")}>
+            Already have an account?
+          </Button>
         </div>
         <div className="w-full flex justify-center items-center">
-          <Button>Register</Button>
+          <Button type="submit" form="register-form">
+            Register
+          </Button>
         </div>
       </TabsContent>
     </Tabs>
