@@ -8,7 +8,7 @@ It provides a seamless user experience for managing business entities, users, in
 - **Modular Dashboard:** Manage stores, organizations, or any business unit (“ptero”) from a unified interface.
 - **Real-time Data:** Powered by TanStack Query for efficient data fetching and caching.
 - **Dynamic Forms:** Built with TanStack Form for robust, type-safe user input.
-- **Responsive Design:** Styled with Tailwind CSS and TailGrids for a clean, adaptive UI.
+- **Responsive Design:** Styled with Tailwind CSS and Shadcn for a clean, adaptive UI.
 - **API-First:** Always in sync with the latest capabilities of the Pteros API.
 
 ## Tech Stack
