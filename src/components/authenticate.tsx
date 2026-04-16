@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { useForm } from "@tanstack/react-form";
 import { Tabs, TabsContent } from "./ui/tabs";
 import { Input } from "./ui/input";
@@ -6,6 +7,8 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { useState } from "react";
 import { z } from "zod";
+import { useLogin, useRegister } from "@/api/authentication";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -30,6 +33,10 @@ const registerSchema = loginSchema
 
 export const Authenticate = () => {
   const [tab, setTab] = useState("login");
+  const [checkRememberUser, setCheckRememberUser] = useState<boolean>(false);
+
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
 
   const loginForm = useForm({
     defaultValues: {
@@ -40,7 +47,27 @@ export const Authenticate = () => {
       onSubmit: loginSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
+      console.log(`
+        Email sent : ${value.email}
+        Password sent: ${value.password}
+        `);
+
+      loginMutation.mutate(value, {
+        onSuccess: (userId) => {
+          console.log(userId);
+          if (checkRememberUser) {
+            Cookies.set("user", userId);
+          } else {
+            Cookies.set("user", userId, { expires: 1 });
+          }
+
+          toast.success("Welcome Back");
+        },
+        onError: (error) => {
+          console.log(error);
+          toast.error(error.message);
+        },
+      });
     },
   });
 
@@ -54,7 +81,21 @@ export const Authenticate = () => {
       onSubmit: registerSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
+      console.log(`
+        Email sent : ${value.email}
+        Password sent: ${value.password}
+        `);
+
+      registerMutation.mutate(value, {
+        onSuccess: () => {
+          setTab("login");
+          toast.success("User created! You can now login.");
+        },
+        onError: (error) => {
+          console.log(error);
+          toast.error(error.message);
+        },
+      });
     },
   });
 
@@ -123,7 +164,11 @@ export const Authenticate = () => {
         </form>
         <div className="w-full flex justify-between items-center ">
           <div className="flex gap-2 items-center">
-            <Checkbox /> <span>Remember me</span>
+            <Checkbox
+              checked={checkRememberUser}
+              onCheckedChange={(val) => setCheckRememberUser(val === true)}
+            />
+            <span>Remember me</span>
           </div>
           <Button variant={"link"} onClick={() => setTab("register")}>
             Create an account
@@ -208,7 +253,7 @@ export const Authenticate = () => {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
-                      placeholder="password"
+                      placeholder="reapeat password"
                       autoComplete="off"
                     />
                     {isInvalid && (

@@ -2,12 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Authenticate } from "../components/authenticate";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { getApiUrl } from "@/lib/utils/api";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  getApiUrl();
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-10">
@@ -29,7 +31,7 @@ function Index() {
           </Button>
         </div>
         <div className="flex justify-center items-center w-full">
-          <Card className="max-w-sm md:max-w-md w-full border border-primary p-5">
+          <Card className="max-w-sm md:max-w-md w-full border-2 border-primary p-5">
             <Authenticate />
           </Card>
         </div>
