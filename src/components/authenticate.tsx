@@ -53,7 +53,7 @@ export const Authenticate = () => {
         `);
 
       loginMutation.mutate(value, {
-        onSuccess: (userId) => {
+        onSuccess: async (userId) => {
           console.log(userId);
           if (checkRememberUser) {
             Cookies.set("user", userId);
@@ -62,6 +62,11 @@ export const Authenticate = () => {
           }
 
           toast.success("Welcome Back");
+
+          const sleep = (ms: number) =>
+            new Promise((resolve) => setTimeout(resolve, ms));
+          await sleep(500);
+          window.location.reload();
         },
         onError: (error) => {
           console.log(error);

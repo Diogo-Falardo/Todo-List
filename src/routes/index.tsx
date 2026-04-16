@@ -1,15 +1,17 @@
+import Cookies from "js-cookie";
 import { createFileRoute } from "@tanstack/react-router";
 import { Authenticate } from "../components/authenticate";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getApiUrl } from "@/lib/utils/api";
+import { PterosSelector } from "@/components/pterosSelector";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  getApiUrl();
+  const userId = Cookies.get("user");
+
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-10">
@@ -32,7 +34,7 @@ function Index() {
         </div>
         <div className="flex justify-center items-center w-full">
           <Card className="max-w-sm md:max-w-md w-full border-2 border-primary p-5">
-            <Authenticate />
+            {userId ? <PterosSelector userId={userId} /> : <Authenticate />}
           </Card>
         </div>
       </div>
