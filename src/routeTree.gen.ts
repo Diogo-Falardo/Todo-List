@@ -10,33 +10,57 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardPteroIdRouteImport } from './routes/dashboard/$pteroId'
+import { Route as DashboardPteroIdStaffManagementRouteImport } from './routes/dashboard/$pteroId.staffManagement'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardPteroIdRoute = DashboardPteroIdRouteImport.update({
+  id: '/dashboard/$pteroId',
+  path: '/dashboard/$pteroId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardPteroIdStaffManagementRoute =
+  DashboardPteroIdStaffManagementRouteImport.update({
+    id: '/staffManagement',
+    path: '/staffManagement',
+    getParentRoute: () => DashboardPteroIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard/$pteroId': typeof DashboardPteroIdRouteWithChildren
+  '/dashboard/$pteroId/staffManagement': typeof DashboardPteroIdStaffManagementRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard/$pteroId': typeof DashboardPteroIdRouteWithChildren
+  '/dashboard/$pteroId/staffManagement': typeof DashboardPteroIdStaffManagementRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard/$pteroId': typeof DashboardPteroIdRouteWithChildren
+  '/dashboard/$pteroId/staffManagement': typeof DashboardPteroIdStaffManagementRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/dashboard/$pteroId' | '/dashboard/$pteroId/staffManagement'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/dashboard/$pteroId' | '/dashboard/$pteroId/staffManagement'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard/$pteroId'
+    | '/dashboard/$pteroId/staffManagement'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardPteroIdRoute: typeof DashboardPteroIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +72,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/$pteroId': {
+      id: '/dashboard/$pteroId'
+      path: '/dashboard/$pteroId'
+      fullPath: '/dashboard/$pteroId'
+      preLoaderRoute: typeof DashboardPteroIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/$pteroId/staffManagement': {
+      id: '/dashboard/$pteroId/staffManagement'
+      path: '/staffManagement'
+      fullPath: '/dashboard/$pteroId/staffManagement'
+      preLoaderRoute: typeof DashboardPteroIdStaffManagementRouteImport
+      parentRoute: typeof DashboardPteroIdRoute
+    }
   }
 }
 
+interface DashboardPteroIdRouteChildren {
+  DashboardPteroIdStaffManagementRoute: typeof DashboardPteroIdStaffManagementRoute
+}
+
+const DashboardPteroIdRouteChildren: DashboardPteroIdRouteChildren = {
+  DashboardPteroIdStaffManagementRoute: DashboardPteroIdStaffManagementRoute,
+}
+
+const DashboardPteroIdRouteWithChildren =
+  DashboardPteroIdRoute._addFileChildren(DashboardPteroIdRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardPteroIdRoute: DashboardPteroIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -55,7 +55,7 @@ export const Authenticate = () => {
       loginMutation.mutate(value, {
         onSuccess: async (userId) => {
           console.log(userId);
-          if (checkRememberUser) {
+          if (!checkRememberUser) {
             Cookies.set("user", userId);
           } else {
             Cookies.set("user", userId, { expires: 1 });

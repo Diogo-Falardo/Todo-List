@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent } from "./ui/tabs";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import { useJoinPtero, usePteroCreate, usePterosList } from "@/api/pteros";
+import {
+  useJoinPtero,
+  usePteroCreate,
+  usePterosList,
+} from "@/api/pteros/pteros";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { z } from "zod";
@@ -10,6 +14,7 @@ import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup } from "./ui/field";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
+import { useRouter } from "@tanstack/react-router";
 
 const createPteroSchema = z.object({
   name: z
@@ -24,6 +29,7 @@ const inviteLinkSchema = z.object({
 
 export const PterosSelector = ({ userId }: { userId: string }) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const [tab, setTab] = useState("pteros");
 
@@ -116,6 +122,12 @@ export const PterosSelector = ({ userId }: { userId: string }) => {
                   pteros.length > 0 &&
                   pteros.map((p) => (
                     <Card
+                      onClick={() =>
+                        router.navigate({
+                          to: "/dashboard/$pteroId",
+                          params: { pteroId: p.id },
+                        })
+                      }
                       key={p.id}
                       className="flex items-center justify-center bg-secondary ring-primary"
                     >
