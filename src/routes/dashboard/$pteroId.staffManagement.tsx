@@ -1,4 +1,5 @@
 import { NewRoleComponent } from "@/components/dashboard/staff_management/components/newRole-component";
+import { NewStaffMemberComponent } from "@/components/dashboard/staff_management/components/newStaffMember-component";
 import { PermissionsToRoleComponent } from "@/components/dashboard/staff_management/components/permissionsToRole-component";
 import { createFileRoute } from "@tanstack/react-router";
 import Cookies from "js-cookie";
@@ -18,6 +19,7 @@ function RouteComponent() {
       <div className="grid grid-cols-1 sm:grid-cols-3 px-5 gap-2 p-2 w-full">
         <NewRoleComponent userId={userId} pteroId={pteroId} />
         <PermissionsToRoleComponent userId={userId} pteroId={pteroId} />
+        <NewStaffMemberComponent userId={userId} pteroId={pteroId} />
       </div>
     </div>
   );

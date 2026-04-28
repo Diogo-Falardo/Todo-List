@@ -103,3 +103,33 @@ export function useSetPteroRolesPermissions(userId: string, pteroId: string) {
     },
   });
 }
+
+// set new staff member
+
+export function useSetNewPteroStaffMemberRole(userId: string, pteroId: string) {
+  return useMutation({
+    mutationFn: async ({
+      staffId,
+      roleId,
+    }: {
+      staffId: string;
+      roleId: string;
+    }) => {
+      const payload = {
+        userId: staffId,
+        roleId,
+      };
+      const res = await fetch(
+        `${apiUrl}/ptero/set-new-staff-member/${userId}/${pteroId}`,
+        {
+          method: "POST",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.error || "Failed to add role to staff member!");
+    },
+  });
+}
