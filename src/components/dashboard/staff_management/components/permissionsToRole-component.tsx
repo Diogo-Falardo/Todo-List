@@ -1,7 +1,8 @@
 import {
   useGetPteroRolesPermissions,
   useGetPteroStaffRoles,
-} from "@/api/pteros/pteros";
+  useSetPteroRolesPermissions,
+} from "@/api/pteros/pteros.roles";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,7 +29,8 @@ import {
 } from "@/components/ui/select";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const PermissionsToRoleComponent = ({
   userId,
@@ -51,12 +53,36 @@ export const PermissionsToRoleComponent = ({
     roleId,
   );
 
+  const setNewPteroRolesMutation = useSetPteroRolesPermissions(userId, pteroId);
+
   const setPermissionsToRoleForm = useForm({
     defaultValues: {
       roleId: "",
-      listOfPermissions: [""],
+      listOfPermissions: [] as string[],
+    },
+    onSubmit: async ({ value }) => {
+      console.log(value);
+      setNewPteroRolesMutation.mutate(value, {
+        onSuccess: () => {
+          toast.success("Permissions updated!");
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error(error.message);
+        },
+      });
     },
   });
+
+  useEffect(() => {
+    if (pteroRolesPermissions) {
+      const activeIds = pteroRolesPermissions
+        .filter((p) => p.active)
+        .map((p) => p.id);
+      setPermissionsToRoleForm.setFieldValue("listOfPermissions", activeIds);
+      setPermissionsToRoleForm.setFieldValue("roleId", roleId);
+    }
+  }, [pteroRolesPermissions]);
 
   if (!pteroRoles) {
     return (
@@ -97,7 +123,8 @@ export const PermissionsToRoleComponent = ({
               value={roleId}
               onValueChange={(value) => {
                 const isValid = pteroRoles.some((r) => r.id === value);
-                setRoleId(isValid ? value : "");
+                const nextRoleId = isValid ? value : "";
+                setRoleId(nextRoleId);
                 if (isValid) {
                   queryClient.invalidateQueries({
                     queryKey: [
@@ -105,9 +132,10 @@ export const PermissionsToRoleComponent = ({
                       "staff",
                       "roles",
                       "permissions",
-                      roleId,
+                      nextRoleId,
                     ],
                   });
+                  setPermissionsToRoleForm.setFieldValue("roleId", nextRoleId);
                 }
               }}
             >
@@ -136,8 +164,8 @@ export const PermissionsToRoleComponent = ({
                   </Button>
                 )}
               </PopoverTrigger>
-              <PopoverContent>
-                <ScrollArea>
+              <PopoverContent className="w-48" align="end">
+                <ScrollArea className="h-48">
                   {pteroRolesIsError ? (
                     <div className="flex flex-col justify-center items-center">
                       <p>Unable to load permissions! Please try again later.</p>
@@ -147,28 +175,63 @@ export const PermissionsToRoleComponent = ({
                       <p>Unable to load permissions! Please try again later.</p>
                     </div>
                   ) : (
-                    pteroRolesPermissions &&
-                    pteroRolesPermissions.length > 0 &&
-                    pteroRolesPermissions.map((p) => {
-                      return (
-                        <div>
-                          <Checkbox disabled={p.active} />
-                          <p>{p.permission}</p>
+                    <setPermissionsToRoleForm.Field
+                      name="listOfPermissions"
+                      children={(field) => (
+                        <div className="flex flex-col gap-2">
+                          {pteroRolesPermissions &&
+                            pteroRolesPermissions.length > 0 &&
+                            pteroRolesPermissions.map((p) => {
+                              const isChecked = field.state.value.includes(
+                                p.id,
+                              );
+                              return (
+                                <div key={p.id} className="flex flex-col gap-2">
+                                  <div className="flex gap-2 items-center">
+                                    <Checkbox
+                                      checked={isChecked}
+                                      onCheckedChange={(checked) => {
+                                        const nextChecked = checked === true;
+
+                                        if (nextChecked) {
+                                          field.handleChange([
+                                            ...field.state.value,
+                                            p.id,
+                                          ]);
+                                          return;
+                                        }
+
+                                        field.handleChange(
+                                          field.state.value.filter(
+                                            (id) => id !== p.id,
+                                          ),
+                                        );
+                                      }}
+                                    />
+                                    <p>{p.permission}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
                         </div>
-                      );
-                    })
+                      )}
+                    />
                   )}
                 </ScrollArea>
               </PopoverContent>
             </Popover>
           </div>
-
-          <div className="w-full flex justify-center items-center">
-            <Button type="submit" form="set-permissions-to-role-form">
-              save
-            </Button>
-          </div>
         </form>
+
+        <div className="w-full flex justify-center items-center">
+          <Button
+            disabled={roleId === "" ? true : false}
+            type="submit"
+            form="set-permissions-to-role-form"
+          >
+            save
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

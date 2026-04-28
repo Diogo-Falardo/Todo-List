@@ -1,7 +1,5 @@
 import { apiUrl } from "@/lib/utils/api";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import type { permissions } from "../globals";
-import { FileTerminal } from "lucide-react";
 
 type pteroSimplified = {
   id: string;
@@ -75,64 +73,6 @@ export function useGetPteroStaffList(pteroId: string) {
         throw new Error(data.error || "Failed to load ptero staff list!");
 
       return data.ptero_staff_list as Array<staffMemberListInfo>;
-    },
-  });
-}
-
-// {
-//   "id": "f805ee2f-63c1-4327-bef6-ef36221a4f70",
-//   "pteroId": "2d14c17e-ed0e-4c2c-bd64-e4a7ba30a849",
-//   "role": "Viewer",
-//   "hierarchy": 0
-// },
-
-export type StaffRolesList = {
-  id: string;
-  pteroId: string;
-  role: string;
-  hierarchy: number;
-};
-
-export function useGetPteroStaffRoles(userId: string, pteroId: string) {
-  return useQuery({
-    queryKey: ["pteros", "staff", "roles"],
-    queryFn: async (): Promise<Array<StaffRolesList>> => {
-      const res = await fetch(`${apiUrl}/ptero/roles/${userId}/${pteroId}`);
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.error || "Failed to load ptero staff roles list!");
-
-      return data as Array<StaffRolesList>;
-    },
-  });
-}
-
-export type StaffRolesPermissionsList = {
-  id: string;
-  permission: string;
-  active: boolean;
-};
-
-export function useGetPteroRolesPermissions(
-  userId: string,
-  pteroId: string,
-  roleId: string,
-) {
-  return useQuery({
-    queryKey: ["pteros", "staff", "roles", "permissions", roleId],
-    enabled: !!roleId,
-    staleTime: 60_000,
-    queryFn: async (): Promise<Array<StaffRolesPermissionsList>> => {
-      const res = await fetch(
-        `${apiUrl}/ptero/roles-permissions/${userId}/${pteroId}/${roleId}`,
-      );
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(
-          data.error || "Failed to load permissions of each role!",
-        );
-
-      return data as Array<StaffRolesPermissionsList>;
     },
   });
 }
