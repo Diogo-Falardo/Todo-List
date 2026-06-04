@@ -1,13 +1,15 @@
+import { throwError } from "@/middlewares/error"
 import { db } from "../db/db.index"
 import { table_guests } from "../db/schema"
 import {
   createGuestSchema,
   updateGuestSchema,
   guestIdSchema,
-  type CreateGuestInput,
-  type UpdateGuestInput,
+  type CreateGuest,
+  type UpdateGuest,
 } from "../db/schemas/guest.schema"
 import { eq } from "drizzle-orm"
+import { log } from "@/middlewares/logger"
 
 /**
  * GuestServer manages all database operations for guests.
@@ -23,13 +25,22 @@ class GuestServer {
    * @returns The created guest record
    * @throws ZodError if validation fails
    */
-  async createGuest(data: CreateGuestInput) {
+  async createGuest(data: CreateGuest) {
     const validatedData = createGuestSchema.parse(data)
-    const result = await db
-      .insert(table_guests)
-      .values(validatedData)
-      .returning()
-    return result[0]
+    try {
+      const [result] = await db
+        .insert(table_guests)
+        .values(validatedData)
+        .returning()
+      log.withMetadata(data).info("user created")
+      return result
+    } catch (error) {
+      throwError({
+        error,
+        logError: "GuestServer.createGuest",
+        exceptionErrorMessage: "Error creating guest!",
+      })
+    }
   }
 
   /**
@@ -41,11 +52,19 @@ class GuestServer {
    */
   async getGuestById(id: string) {
     guestIdSchema.parse({ id })
-    const result = await db
-      .select()
-      .from(table_guests)
-      .where(eq(table_guests.id, id))
-    return result[0] || null
+    try {
+      const [result] = await db
+        .select()
+        .from(table_guests)
+        .where(eq(table_guests.id, id))
+      return result || null
+    } catch (error) {
+      throwError({
+        error,
+        logError: "GuestServer.getGuestById",
+        exceptionErrorMessage: "Error retrieving guest!",
+      })
+    }
   }
 
   /**
@@ -53,7 +72,16 @@ class GuestServer {
    * @returns Array of all guest records
    */
   async getAllGuests() {
-    return await db.select().from(table_guests)
+    try {
+      const result = await db.select().from(table_guests)
+      return result
+    } catch (error) {
+      throwError({
+        error,
+        logError: "GuestServer.getAllGuests",
+        exceptionErrorMessage: "Error retrieving guests!",
+      })
+    }
   }
 
   /**
@@ -64,15 +92,24 @@ class GuestServer {
    * @returns The updated guest record
    * @throws ZodError if validation fails
    */
-  async updateGuest(id: string, data: UpdateGuestInput) {
+  async updateGuest(id: string, data: UpdateGuest) {
     guestIdSchema.parse({ id })
     const validatedData = updateGuestSchema.parse(data)
-    const result = await db
-      .update(table_guests)
-      .set(validatedData)
-      .where(eq(table_guests.id, id))
-      .returning()
-    return result[0] || null
+    try {
+      const [result] = await db
+        .update(table_guests)
+        .set(validatedData)
+        .where(eq(table_guests.id, id))
+        .returning()
+      log.withMetadata({ id, data: validatedData }).info("guest updated")
+      return result || null
+    } catch (error) {
+      throwError({
+        error,
+        logError: "GuestServer.updateGuest",
+        exceptionErrorMessage: "Error updating guest!",
+      })
+    }
   }
 
   /**
@@ -84,11 +121,20 @@ class GuestServer {
    */
   async deleteGuest(id: string) {
     guestIdSchema.parse({ id })
-    const result = await db
-      .delete(table_guests)
-      .where(eq(table_guests.id, id))
-      .returning()
-    return result[0] || null
+    try {
+      const [result] = await db
+        .delete(table_guests)
+        .where(eq(table_guests.id, id))
+        .returning()
+      log.withMetadata({ id }).info("guest deleted")
+      return result || null
+    } catch (error) {
+      throwError({
+        error,
+        logError: "GuestServer.deleteGuest",
+        exceptionErrorMessage: "Error deleting guest!",
+      })
+    }
   }
 }
 

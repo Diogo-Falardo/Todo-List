@@ -6,15 +6,11 @@ import { z } from "zod"
  */
 export const createGuestSchema = z.object({
   name: z.string().min(1, "name is required"),
-  date_start: z
-    .date("date_start must be a valid date")
-    .transform((date) => date.toISOString().split("T")[0]),
-  date_end: z
-    .date("date_end must be a valid date")
-    .transform((date) => date.toISOString().split("T")[0]),
-  notes: z.string().optional(),
+  date_start: z.string().min(1, "date_start is required"),
+  date_end: z.string().min(1, "date_end is required"),
+  notes: z.string().nullable().optional(),
   platform: z.string().min(1, "platform is required"),
-  total: z.string().optional(),
+  total: z.string().nullable().optional(),
 })
 
 /**
@@ -32,7 +28,5 @@ export const guestIdSchema = z.object({
 })
 
 export type CreateGuest = z.infer<typeof createGuestSchema>
-export type CreateGuestInput = z.input<typeof createGuestSchema>
 export type UpdateGuest = z.infer<typeof updateGuestSchema>
-export type UpdateGuestInput = z.input<typeof updateGuestSchema>
 export type GuestId = z.infer<typeof guestIdSchema>

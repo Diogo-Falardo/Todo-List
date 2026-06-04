@@ -1,3 +1,4 @@
+import { throwError } from "@/middlewares/error"
 import { db } from "../db/db.index"
 import { table_maintenance } from "../db/schema"
 import {
@@ -8,6 +9,7 @@ import {
   type UpdateMaintenance,
 } from "../db/schemas/maintenance.schema"
 import { eq } from "drizzle-orm"
+import { log } from "@/middlewares/logger"
 
 /**
  * MaintenanceServer manages all database operations for maintenance records.
@@ -25,11 +27,20 @@ class MaintenanceServer {
    */
   async createMaintenance(data: CreateMaintenance) {
     const validatedData = createMaintenanceSchema.parse(data)
-    const result = await db
-      .insert(table_maintenance)
-      .values(validatedData)
-      .returning()
-    return result[0]
+    try {
+      const [result] = await db
+        .insert(table_maintenance)
+        .values(validatedData)
+        .returning()
+      log.withMetadata(data).info("maintenance created")
+      return result
+    } catch (error) {
+      throwError({
+        error,
+        logError: "MaintenanceServer.createMaintenance",
+        exceptionErrorMessage: "Error creating maintenance!",
+      })
+    }
   }
 
   /**
@@ -41,11 +52,19 @@ class MaintenanceServer {
    */
   async getMaintenanceById(id: string) {
     maintenanceIdSchema.parse({ id })
-    const result = await db
-      .select()
-      .from(table_maintenance)
-      .where(eq(table_maintenance.id, id))
-    return result[0] || null
+    try {
+      const [result] = await db
+        .select()
+        .from(table_maintenance)
+        .where(eq(table_maintenance.id, id))
+      return result || null
+    } catch (error) {
+      throwError({
+        error,
+        logError: "MaintenanceServer.getMaintenanceById",
+        exceptionErrorMessage: "Error retrieving maintenance!",
+      })
+    }
   }
 
   /**
@@ -53,7 +72,16 @@ class MaintenanceServer {
    * @returns Array of all maintenance records
    */
   async getAllMaintenance() {
-    return await db.select().from(table_maintenance)
+    try {
+      const result = await db.select().from(table_maintenance)
+      return result
+    } catch (error) {
+      throwError({
+        error,
+        logError: "MaintenanceServer.getAllMaintenance",
+        exceptionErrorMessage: "Error retrieving maintenance records!",
+      })
+    }
   }
 
   /**
@@ -67,12 +95,21 @@ class MaintenanceServer {
   async updateMaintenance(id: string, data: UpdateMaintenance) {
     maintenanceIdSchema.parse({ id })
     const validatedData = updateMaintenanceSchema.parse(data)
-    const result = await db
-      .update(table_maintenance)
-      .set(validatedData)
-      .where(eq(table_maintenance.id, id))
-      .returning()
-    return result[0] || null
+    try {
+      const [result] = await db
+        .update(table_maintenance)
+        .set(validatedData)
+        .where(eq(table_maintenance.id, id))
+        .returning()
+      log.withMetadata({ id, data: validatedData }).info("maintenance updated")
+      return result || null
+    } catch (error) {
+      throwError({
+        error,
+        logError: "MaintenanceServer.updateMaintenance",
+        exceptionErrorMessage: "Error updating maintenance!",
+      })
+    }
   }
 
   /**
@@ -84,11 +121,20 @@ class MaintenanceServer {
    */
   async deleteMaintenance(id: string) {
     maintenanceIdSchema.parse({ id })
-    const result = await db
-      .delete(table_maintenance)
-      .where(eq(table_maintenance.id, id))
-      .returning()
-    return result[0] || null
+    try {
+      const [result] = await db
+        .delete(table_maintenance)
+        .where(eq(table_maintenance.id, id))
+        .returning()
+      log.withMetadata({ id }).info("maintenance deleted")
+      return result || null
+    } catch (error) {
+      throwError({
+        error,
+        logError: "MaintenanceServer.deleteMaintenance",
+        exceptionErrorMessage: "Error deleting maintenance!",
+      })
+    }
   }
 }
 
