@@ -1,15 +1,13 @@
 import { throwError } from "@/middlewares/error"
 import { db } from "../db/db.index"
 import { table_maintenance } from "../db/schema"
-import {
-  createMaintenanceSchema,
-  updateMaintenanceSchema,
-  maintenanceIdSchema,
-  type CreateMaintenance,
-  type UpdateMaintenance,
-} from "../db/schemas/maintenance.schema"
 import { eq } from "drizzle-orm"
 import { log } from "@/middlewares/logger"
+import type {
+  CreateMaintenance,
+  Maintenance,
+  UpdateMaintenance,
+} from "@/db/schemas/maintenance/maintenance.types"
 
 /**
  * MaintenanceServer manages all database operations for maintenance records.
@@ -20,17 +18,15 @@ import { log } from "@/middlewares/logger"
 class MaintenanceServer {
   /**
    * Create a new maintenance record.
-   * - Validates input against createMaintenanceSchema.
    * @param data Maintenance data (id will be auto-generated)
    * @returns The created maintenance record
    * @throws ZodError if validation fails
    */
-  async createMaintenance(data: CreateMaintenance) {
-    const validatedData = createMaintenanceSchema.parse(data)
+  async createMaintenance(data: CreateMaintenance): Promise<CreateMaintenance> {
     try {
       const [result] = await db
         .insert(table_maintenance)
-        .values(validatedData)
+        .values(data)
         .returning()
       log.withMetadata(data).info("maintenance created")
       return result
@@ -45,13 +41,11 @@ class MaintenanceServer {
 
   /**
    * Retrieve a maintenance record by ID.
-   * - Validates ID format using maintenanceIdSchema.
    * @param id Maintenance ID (UUID)
    * @returns The maintenance record if found, null otherwise
    * @throws ZodError if ID validation fails
    */
-  async getMaintenanceById(id: string) {
-    maintenanceIdSchema.parse({ id })
+  async getMaintenanceById(id: string): Promise<Maintenance | null> {
     try {
       const [result] = await db
         .select()
@@ -71,7 +65,7 @@ class MaintenanceServer {
    * Retrieve all maintenance records.
    * @returns Array of all maintenance records
    */
-  async getAllMaintenance() {
+  async getAllMaintenance(): Promise<Array<Maintenance>> {
     try {
       const result = await db.select().from(table_maintenance)
       return result
@@ -86,22 +80,22 @@ class MaintenanceServer {
 
   /**
    * Update a maintenance record by ID.
-   * - Validates ID format and data against updateMaintenanceSchema.
    * @param id Maintenance ID (UUID)
    * @param data Partial maintenance data to update
    * @returns The updated maintenance record
    * @throws ZodError if validation fails
    */
-  async updateMaintenance(id: string, data: UpdateMaintenance) {
-    maintenanceIdSchema.parse({ id })
-    const validatedData = updateMaintenanceSchema.parse(data)
+  async updateMaintenance(
+    id: string,
+    data: UpdateMaintenance
+  ): Promise<Maintenance | null> {
     try {
       const [result] = await db
         .update(table_maintenance)
-        .set(validatedData)
+        .set(data)
         .where(eq(table_maintenance.id, id))
         .returning()
-      log.withMetadata({ id, data: validatedData }).info("maintenance updated")
+      log.withMetadata({ id, data }).info("maintenance updated")
       return result || null
     } catch (error) {
       throwError({
@@ -114,13 +108,11 @@ class MaintenanceServer {
 
   /**
    * Delete a maintenance record by ID.
-   * - Validates ID format using maintenanceIdSchema.
    * @param id Maintenance ID (UUID)
    * @returns The deleted maintenance record
    * @throws ZodError if ID validation fails
    */
-  async deleteMaintenance(id: string) {
-    maintenanceIdSchema.parse({ id })
+  async deleteMaintenance(id: string): Promise<Maintenance | null> {
     try {
       const [result] = await db
         .delete(table_maintenance)
