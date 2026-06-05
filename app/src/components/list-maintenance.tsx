@@ -27,9 +27,9 @@ export const ListMaintenance = () => {
   }
 
   return (
-    <div className="h-40">
+    <div className="h-100 w-full">
       <ScrollArea className="h-full">
-        <div className="h-full p-1 py-2">
+        <div className="flex h-full flex-col gap-2 p-1 py-2">
           {data && data.length > 0 ? (
             data.map((r) => (
               <Card

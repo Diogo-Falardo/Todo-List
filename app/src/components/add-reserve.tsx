@@ -55,6 +55,7 @@ export const AddReserve = () => {
         e.preventDefault()
         addReserveForm.handleSubmit()
       }}
+      className="min-w-70"
     >
       <FieldGroup>
         <addReserveForm.Field

@@ -45,6 +45,7 @@ export const AddMaintenance = () => {
         e.preventDefault()
         addMaintenanceForm.handleSubmit()
       }}
+      className="min-w-70"
     >
       <FieldGroup>
         <addMaintenanceForm.Field
