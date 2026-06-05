@@ -7,9 +7,9 @@ import { z } from "zod"
 export const maintenanceSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1, "name is required"),
-  money_want_to_spend: z.string().optional().nullable(),
-  actual_cost: z.string().optional().nullable(),
-  days_to_complete: z.string().optional().nullable(),
+  moneyWantToSpend: z.string().optional().nullable(),
+  actualCost: z.string().optional().nullable(),
+  daysToComplete: z.string().optional().nullable(),
 })
 
 /**

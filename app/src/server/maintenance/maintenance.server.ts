@@ -1,6 +1,6 @@
 import { throwError } from "@/middlewares/error"
-import { db } from "../db/db.index"
-import { table_maintenance } from "../db/schema"
+import { db } from "../../db/db.index"
+import { table_maintenance } from "../../db/schema"
 import { eq } from "drizzle-orm"
 import { log } from "@/middlewares/logger"
 import type {
