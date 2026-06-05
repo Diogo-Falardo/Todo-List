@@ -5,7 +5,6 @@ import { ListReserve } from "@/components/list-reserve"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useMetrics } from "@/hooks/metrics.hooks"
 import { createFileRoute } from "@tanstack/react-router"
-import { char } from "drizzle-orm/mysql-core"
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts"
 
 export const Route = createFileRoute("/")({ component: App })
