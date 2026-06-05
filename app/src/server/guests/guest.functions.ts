@@ -5,3 +5,7 @@ import { guestServer } from "./guest.server"
 export const sfCreateReserve = createServerFn({ method: "POST" })
   .inputValidator((data: { dto: CreateGuest }) => data)
   .handler(async ({ data }) => await guestServer.createGuest(data.dto))
+
+export const sfGetReserves = createServerFn({ method: "GET" }).handler(
+  async () => await guestServer.getAllGuests()
+)
