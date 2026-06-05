@@ -87,7 +87,7 @@ export const AddMaintenance = () => {
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={isInvalid}
-                  placeholder="ex.: 100€"
+                  placeholder="ex.: 100"
                   autoComplete="off"
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -110,7 +110,7 @@ export const AddMaintenance = () => {
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={isInvalid}
-                  placeholder="ex.: 125€"
+                  placeholder="ex.: 125"
                   autoComplete="off"
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
